@@ -4,6 +4,11 @@ import { prisma } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  // Garantia extra para o build na Vercel
+  if (!process.env.DATABASE_URL) {
+    return NextResponse.json({ error: "Banco offline" }, { status: 503 });
+  }
+
   try {
     const servicos = await prisma.servico.findMany({
       include: {
