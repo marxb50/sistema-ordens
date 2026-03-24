@@ -1,0 +1,125 @@
+generator client {
+  provider      = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TipoUsuario {
+  ADMIN
+  FUNCIONARIO
+  SELIM
+  MB
+}
+
+enum StatusUsuario {
+  ATIVO
+  PENDENTE
+  INATIVO
+}
+
+enum TipoServico {
+  ROCADEIRA
+  CAPINACAO
+  OP_ROCADEIRA
+}
+
+enum StatusServico {
+  INICIADO
+  PENDENTE_MB
+  FINALIZADO
+  CONFERIDO
+  REJEITADO
+  EM_ANALISE
+}
+
+enum AcaoLog {
+  CRIOU
+  INICIOU
+  FINALIZOU
+  APROVOU_SELIM
+  REPROVOU_SELIM
+  APROVOU_MB
+  REPROVOU_MB
+  GEROU_PDF
+  LOGIN
+  CADASTRO
+  CONFIG_ALTERADA
+}
+
+model Usuario {
+  id          String        @id @default(cuid())
+  nome        String
+  login       String        @unique
+  email       String?       @unique
+  senhaHash   String        @map("senha_hash")
+  tipo        TipoUsuario
+  status      StatusUsuario @default(PENDENTE)
+  criadoEm    DateTime      @default(now()) @map("criado_em")
+  ultimoLogin DateTime?     @map("ultimo_login")
+
+  servicosExecutados Servico[] @relation("funcionario")
+  aprovadosSelim     Servico[] @relation("selimAprovador")
+  confirmadosMb      Servico[] @relation("mbConfirmador")
+  logs               Log[]
+
+  @@map("usuarios")
+}
+
+model Servico {
+  id            String        @id @default(cuid())
+  codigoInterno String        @unique @map("codigo_interno")
+  funcionarioId String        @map("funcionario_id")
+  tipoServico   TipoServico   @map("tipo_servico")
+  status        StatusServico @default(INICIADO)
+
+  dataInicio    DateTime? @map("data_inicio")
+  latInicio     Float?    @map("lat_inicio")
+  lngInicio     Float?    @map("lng_inicio")
+  fotoInicioUrl String?   @map("foto_inicio_url")
+  fotoInicioId  String?   @map("foto_inicio_id")
+
+  dataFinal    DateTime? @map("data_final")
+  latFinal     Float?    @map("lat_final")
+  lngFinal     Float?    @map("lng_final")
+  fotoFinalUrl String?   @map("foto_final_url")
+  fotoFinalId  String?   @map("foto_final_id")
+
+  selimAprovadoPorId String?   @map("selim_aprovado_por")
+  selimAprovadoEm    DateTime? @map("selim_aprovado_em")
+  mbConfirmadoPorId  String?   @map("mb_confirmado_por")
+  mbConfirmadoEm     DateTime? @map("mb_confirmado_em")
+  observacao         String?
+
+  criadoEm DateTime @default(now()) @map("criado_em")
+
+  funcionario    Usuario  @relation("funcionario", fields: [funcionarioId], references: [id])
+  selimAprovador Usuario? @relation("selimAprovador", fields: [selimAprovadoPorId], references: [id])
+  mbConfirmador  Usuario? @relation("mbConfirmador", fields: [mbConfirmadoPorId], references: [id])
+  logs           Log[]
+
+  @@map("servicos")
+}
+
+model Log {
+  id         String   @id @default(cuid())
+  servicoId  String?  @map("servico_id")
+  usuarioId  String   @map("usuario_id")
+  acao       AcaoLog
+  observacao String?
+  timestamp  DateTime @default(now())
+
+  servico Servico? @relation(fields: [servicoId], references: [id])
+  usuario Usuario  @relation(fields: [usuarioId], references: [id])
+
+  @@map("logs")
+}
+
+model Config {
+  key   String @id
+  value String
+
+  @@map("config")
+}
