@@ -5,14 +5,17 @@ async function seed() {
   console.log("🌱 Seeding database...");
 
   // Create admin user
-  const adminHash = await bcrypt.hash("selim parnamirim", 12);
+  const adminHash = await bcrypt.hash("selimparnamirim", 12);
   await prisma.usuario.upsert({
-    where: { login: "admin" },
-    update: {},
+    where: { login: "admin@selim.com" },
+    update: {
+      senhaHash: adminHash,
+      email: "admin@selim.com",
+    },
     create: {
       nome: "Administrador",
-      login: "admin",
-      email: "admin@cadastramento.tech",
+      login: "admin@selim.com",
+      email: "admin@selim.com",
       senhaHash: adminHash,
       tipo: "ADMIN",
       status: "ATIVO",
@@ -65,7 +68,7 @@ async function seed() {
   }
 
   console.log("✅ Seed completed!");
-  console.log("   Admin: admin / selim parnamirim");
+  console.log("   Admin: admin@selim.com / selimparnamirim");
   console.log("   SELIM: selim / prefeitura");
   console.log("   MB: mb / ordem");
 }
