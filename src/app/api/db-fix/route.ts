@@ -20,6 +20,13 @@ export async function GET() {
     await prisma.$queryRaw`SELECT 1`;
     diagnostics.db_connection = "OK";
 
+    diagnostics.step = "Checking Cloudinary";
+    diagnostics.cloudinary = {
+      has_cloud_name: !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+      has_api_key: !!process.env.CLOUDINARY_API_KEY,
+      has_api_secret: !!process.env.CLOUDINARY_API_SECRET,
+    };
+
     diagnostics.step = "Checking Admin User";
     const admin = await prisma.usuario.findUnique({
       where: { login: adminLogin },
@@ -64,6 +71,17 @@ export async function GET() {
 
   } catch (error: any) {
     console.error("Critical DB Fix failure:", error);
+    
+    // Friendly messaging for missing environment variables
+    if (error.message?.includes("DATABASE_URL")) {
+      return NextResponse.json({
+        success: false,
+        error: "Banco offline ou variável DATABASE_URL ausente no ambiente de produção",
+        failed_at_step: diagnostics.step,
+        diagnostics
+      }, { status: 503 });
+    }
+
     return NextResponse.json({
       success: false,
       error: "Falha Crítica no Servidor",
