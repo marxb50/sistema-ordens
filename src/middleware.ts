@@ -6,7 +6,7 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "fallback-secret"
 );
 
-const publicPaths = ["/login", "/cadastro", "/api/auth"];
+const publicPaths = ["/login", "/cadastro", "/api/auth", "/test"];
 
 const roleRoutes: Record<string, string[]> = {
   ADMIN: ["/admin", "/selim", "/mb", "/funcionario", "/relatorios"],
