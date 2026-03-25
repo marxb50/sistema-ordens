@@ -21,18 +21,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" className={inter.variable} suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                const theme = localStorage.getItem('theme') || 'dark';
-                document.documentElement.classList.toggle('dark', theme === 'dark');
-              })();
-            `,
-          }}
-        />
-      </head>
       <body className="min-h-screen antialiased">{children}</body>
     </html>
   );

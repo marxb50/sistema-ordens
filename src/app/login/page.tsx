@@ -11,20 +11,8 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute -top-1/2 -right-1/4 w-[600px] h-[600px] rounded-full opacity-20"
-          style={{
-            background:
-              "radial-gradient(circle, var(--color-primary-400), transparent 70%)",
-          }}
-        />
-        <div
-          className="absolute -bottom-1/3 -left-1/4 w-[500px] h-[500px] rounded-full opacity-15"
-          style={{
-            background:
-              "radial-gradient(circle, var(--color-accent-400), transparent 70%)",
-          }}
-        />
+        <div className="absolute -top-1/2 -right-1/4 w-[600px] h-[600px] rounded-full opacity-20 bg-primary-400 blur-3xl" />
+        <div className="absolute -bottom-1/3 -left-1/4 w-[500px] h-[500px] rounded-full opacity-15 bg-accent-400 blur-3xl" />
       </div>
 
       <div className="w-full max-w-md relative z-10">
