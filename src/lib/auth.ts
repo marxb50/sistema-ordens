@@ -54,12 +54,15 @@ export async function getSession(): Promise<SessionPayload | null> {
 
 export async function setSessionCookie(token: string) {
   const cookieStore = await cookies();
+  const isProd = process.env.NODE_ENV === "production" || !!process.env.VERCEL_URL;
+  
   cookieStore.set("session-token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: isProd,
     sameSite: "lax",
     maxAge: 6 * 60 * 60, // 6 hours
     path: "/",
+    // Não definir domain fixo permite que o cookie funcione em www e no root
   });
 }
 
